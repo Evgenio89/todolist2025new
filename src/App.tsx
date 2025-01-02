@@ -1,8 +1,8 @@
 import './App.css'
 import {TodolistItem} from "./TodolistItem.tsx";
-
+/*первый коммит*/
 export type TaskType ={
-    id: number
+    id:   number
     title: string
     isDone: boolean
 }
