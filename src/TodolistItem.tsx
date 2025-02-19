@@ -1,26 +1,27 @@
-import {filterValueType, TaskType} from "./App.tsx";
+import {filterValueType, TaskType, Todolist} from "./App.tsx";
 import {Button} from "./Button.tsx";
 import {ChangeEvent, KeyboardEvent, useState} from "react";
 
 type TodolistItemType = {
-    title: string
+    todolist: Todolist
     tasks: TaskType[]
-    deleteTask: (taskId: string) => void
-    changeFilter: (filter: filterValueType) => void
-    addTask: (title: string) => void
-    changeTaskStatus: (taskId: string, newStatusValue: boolean) => void
-    filter: filterValueType
+    deleteTask: (todolistId: string, taskId: string) => void
+    changeFilter: (todolistId: string, filter: filterValueType) => void
+    addTask: (todolistId: string, title: string) => void
+    changeTaskStatus: (todolistId: string, taskId: string, newStatusValue: boolean) => void
+    deleteTodolist: (todolistId: string) => void
 }
 
 
 export const TodolistItem = ({
-                                 title,
+                                 todolist: {id, title, filter},
                                  tasks,
                                  deleteTask,
                                  changeFilter,
                                  addTask,
                                  changeTaskStatus,
-                                 filter,
+                                 deleteTodolist,
+
                              }: TodolistItemType) => {
 
     const [taskTitle, setTaskTitle] = useState('')
@@ -29,7 +30,7 @@ export const TodolistItem = ({
     const addTaskButtonHandler = () => {
         const trimmedTitle = taskTitle.trim()
         if (trimmedTitle !== '') {
-            addTask(trimmedTitle)
+            addTask(id, trimmedTitle)
             setTaskTitle('')
         } else {
             setError('Title is required')
@@ -46,10 +47,21 @@ export const TodolistItem = ({
         }
     }
 
+    const changeFilterHandler = (filter: filterValueType) => {
+        changeFilter(id, filter)
+    }
+
+    const deleteTodolistHandler = () => {
+        deleteTodolist(id)
+    }
+
 
     return (
         <div>
-            <h3>{title}</h3>
+            <div className={'container'}>
+                <h3>{title}</h3>
+                <Button title={'X'} onClick={deleteTodolistHandler}/>
+            </div>
             <div>
                 <input
                     className={error ? 'error' : ''}
@@ -66,10 +78,10 @@ export const TodolistItem = ({
                 <ul>
                     {tasks.map(task => {
                         const deleteTaskButtonHandler = () => {
-                            deleteTask(task.id)
+                            deleteTask(id, task.id)
                         }
                         const changeTaskStatusHandler = (event: ChangeEvent<HTMLInputElement>) => {
-                            changeTaskStatus(task.id, event.currentTarget.checked)
+                            changeTaskStatus(id, task.id, event.currentTarget.checked)
                         }
 
                         return (
@@ -89,18 +101,18 @@ export const TodolistItem = ({
             <div>
                 <Button
                     className={filter === 'all' ? 'active-filter' : ''}
-                    title={'All'} onClick={() => {
-                    changeFilter('all')
+                    title={'All'}
+                    onClick={() => {changeFilterHandler('all')
                 }}/>
                 <Button
                     className={filter === 'active' ? 'active-filter' : ''}
-                    title={'Active'} onClick={() => {
-                    changeFilter('active')
+                    title={'Active'}
+                    onClick={() => {changeFilterHandler('active')
                 }}/>
                 <Button
                     className={filter === 'completed' ? 'active-filter' : ''}
-                    title={'Completed'} onClick={() => {
-                    changeFilter('completed')
+                    title={'Completed'}
+                    onClick={() => {changeFilterHandler('completed')
                 }}/>
             </div>
         </div>
