@@ -2,6 +2,7 @@ import './App.css'
 import {TodolistItem} from "./TodolistItem.tsx";
 import {useState} from "react";
 import {v1} from "uuid";
+import {CreateItemForm} from "./CreateItemForm.tsx";
 
 
 export type Todolist = {
@@ -53,6 +54,10 @@ export const App = () => {
         setTodolists(todolists.map(todo => todo.id === todolistId? {...todo, filter} : todo))
     }
 
+    const changeTodolistTitle = (todolistId: string, title: string) => {
+        setTodolists(todolists.map(todo => todo.id === todolistId ? {...todo, title} : todo))
+    }
+
 
 
 
@@ -63,7 +68,7 @@ export const App = () => {
         setTasks({...tasks, [todolistId] : tasks[todolistId].filter(task => task.id !== taskId)})
     }
 
-    const addTask = (todolistId: string, title: string) => {
+    const addItem = (todolistId: string, title: string) => {
             const newTask = {id: v1(), title: title, isDone: false}
         setTasks({...tasks, [todolistId] : [newTask, ...tasks[todolistId]]})
     }
@@ -72,14 +77,31 @@ export const App = () => {
         setTasks({...tasks, [todolistId] : tasks[todolistId].map(task => task.id === taskId? {...task, isDone: newStatusValue} : task)})
     }
 
+    const changeTaskTitle = (todolistId: string, taskId: string, title: string) => {
+        setTasks({...tasks, [todolistId] : tasks[todolistId].map(task => task.id === taskId ? {...task, title} : task)})
+    }
+
+
     const deleteTodolist = (todolistId: string) => {
         setTodolists(todolists.filter(todo => todo.id !== todolistId))
         delete tasks[todolistId]
         setTasks({...tasks })
     }
 
-  return (
+    const createTodolist = (title: string) => {
+        const todolistId = v1()
+        const newTodolist: Todolist = {
+            id: todolistId,
+            title: title,
+            filter: 'all',
+        }
+        setTodolists([newTodolist, ...todolists])
+        setTasks({...tasks, [todolistId]: []})
+    }
+
+    return (
       <div className="app">
+          <CreateItemForm onCreateItem={createTodolist}/>
           {todolists.map((todolist) => {
               const todolistTasks = tasks[todolist.id]
               let filteredTasks = todolistTasks
@@ -97,10 +119,11 @@ export const App = () => {
                       tasks={filteredTasks}
                       deleteTask={deleteTask}
                       changeFilter={changeFilter}
-                      addTask={addTask}
+                      addTask={addItem}
                       changeTaskStatus={changeTaskStatus}
                       deleteTodolist={deleteTodolist}
-
+                      changeTaskTitle={changeTaskTitle}
+                      changeTodolistTitle={changeTodolistTitle}
                   />
               )
           })}
