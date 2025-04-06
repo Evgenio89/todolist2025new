@@ -1,4 +1,4 @@
-import { SxProps } from '@mui/material'
+import {SxProps} from '@mui/material'
 
 export const containerSx: SxProps = {
     display: 'flex',
@@ -10,3 +10,4 @@ export const getListItemSx = (isDone: boolean): SxProps => ({
     justifyContent: 'space-between',
     opacity: isDone ? 0.5 : 1,
 })
+
